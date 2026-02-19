@@ -19,6 +19,10 @@ RUN apt-get -y update  \
     subversion \
     unzip \
     wget \
+    zip \
+    libsdl1.2-dev \
+    libpng12-dev \
+    libasound2-dev \
   && rm -rf /var/lib/apt/lists/*
 
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
@@ -40,6 +44,7 @@ USER trimui
 WORKDIR /home/trimui
 
 COPY trimui_config trimui_config
+COPY buildroot-2016.05.tar.bz2 buildroot-2016.05.tar.bz2 
 COPY build_toolchain.sh *.patch ./
 RUN ./build_toolchain.sh
 RUN sed -i "s|/home/trimui/buildroot-${BUILDROOT_VERSION}/output/build/[^/]\\+/lib/|${BUILDROOT_SYSROOT}/usr/lib/|g" ${BUILDROOT_SYSROOT}/usr/lib/*.la
@@ -56,5 +61,7 @@ RUN rsync -av extras/* $BUILDROOT_SYSROOT/usr/
 
 VOLUME /home/trimui/workspace
 WORKDIR /home/trimui/workspace
+
+# RUN source /home/trimui/env-setup.sh
 
 CMD ["/bin/bash"]
